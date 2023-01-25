@@ -10,9 +10,9 @@ import Combine
 
 final class CharactersViewModel: ObservableObject {
     @Published var results = [Result]()
+    @Published var favedCharacter: Set<Int> = []
     @Published var showingFavs = false
     @Published var searchTerm = ""
-    @Published var favedCharacter: Set<Int> = []
     
     private var favs = FavoritesManager()
     private var cancellable = Set<AnyCancellable>()

@@ -9,28 +9,154 @@ import XCTest
 @testable import RickAndMortyCharacters
 
 final class RickAndMortyCharactersTests: XCTestCase {
-
+    
+    var charactersViewModel: CharactersViewModel?
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        charactersViewModel = CharactersViewModel()
+        charactersViewModel?.showingFavs = Bool.random()
     }
-
+    
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        charactersViewModel = nil
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func test_CharacterViewModel_results_areEmpty() {
+        //given
+        
+        //when
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
+        
+        //then
+        XCTAssertTrue(charactersViewModel.results.isEmpty)
+        XCTAssertEqual(charactersViewModel.results.count, 0)
     }
+    
+    func test_CharacterViewModel_results_areUpdated() {
+        //given
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
+        
+        //when
+        let loopCount: Int = Int.random(in: 1..<100)
+        
+        for _ in 0..<loopCount {
+            let sampleRick = Result(id: 1,
+                                    name: UUID().uuidString,
+                                    status: UUID().uuidString,
+                                    species: UUID().uuidString,
+                                    type: UUID().uuidString,
+                                    gender: UUID().uuidString,
+                                    origin: sampleCrib,
+                                    location: sampleCrib,
+                                    image: UUID().uuidString,
+                                    episode: [UUID().uuidString],
+                                    url: UUID().uuidString,
+                                    created: UUID().uuidString,
+                                    isFaved: Bool.random())
+            
+            charactersViewModel.results.append(sampleRick)
+        }
+        
+        //then
+        XCTAssertTrue(!charactersViewModel.results.isEmpty)
+        XCTAssertFalse(charactersViewModel.results.isEmpty)
+        XCTAssertEqual(charactersViewModel.results.count, loopCount)
+        XCTAssertNotEqual(charactersViewModel.results.count, 0)
+        XCTAssertGreaterThan(charactersViewModel.results.count, 0)
+    }
+    
+    func test_CharacterViewModel_favedCharacters_shouldExist() {
+        //given
+        let showingFavs: Bool = Bool.random()
+        
+        //when
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+        charactersViewModel.showingFavs = showingFavs
+        
+        //then
+        XCTAssertEqual(charactersViewModel.showingFavs, showingFavs)
+    }
+    
+    func test_CharacterViewModel_favedCharacters_shouldExist_stress() {
+        for _ in 0..<100 {
+            //given
+            let showingFavs: Bool = Bool.random()
+            
+            //when
+            guard let charactersViewModel = charactersViewModel else {
+                XCTFail()
+                return
+            }
+
+            charactersViewModel.showingFavs = showingFavs
+            
+            //then
+            XCTAssertEqual(charactersViewModel.showingFavs, showingFavs)
         }
     }
+    
+    func test_CharacterViewModel_searchTerm_existsFalse() {
+        //given
+        let searchTerm = ""
+        
+        //when
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
 
+        charactersViewModel.searchTerm = searchTerm
+        
+        //then
+        XCTAssertEqual(charactersViewModel.searchTerm, searchTerm)
+    }
+    
+    func test_CharacterViewModel_searchTerm_existsTrue() {
+        //given
+        let searchTerm = UUID().uuidString
+        
+        //when
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
+
+        charactersViewModel.searchTerm = searchTerm
+        
+        //then
+        XCTAssertEqual(charactersViewModel.searchTerm, searchTerm)
+    }
+    
+    func test_CharacterViewModel_searchTerm_isFiltered() {
+        //given
+        guard let charactersViewModel = charactersViewModel else {
+            XCTFail()
+            return
+        }
+        
+        //when
+        let searchTerm = UUID().uuidString
+        charactersViewModel.searchTerm = searchTerm
+        
+        //then
+        XCTAssertTrue(!charactersViewModel.searchTerm.isEmpty)
+        XCTAssertFalse(charactersViewModel.searchTerm.isEmpty)
+        XCTAssertGreaterThan(charactersViewModel.searchTerm.count, 0)
+        XCTAssertEqual(charactersViewModel.searchTerm, searchTerm)
+    }
+    
 }
