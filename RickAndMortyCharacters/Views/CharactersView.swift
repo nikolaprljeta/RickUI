@@ -16,7 +16,29 @@ struct CharactersView: View {
         NavigationView {
             List(charactersViewModel.filteredResults.indices, id: \.self) { resultIndex in
                 let result = charactersViewModel.filteredResults[resultIndex]
-                CellView(result: result, charactersViewModel: charactersViewModel)
+                
+//                CellView(result: result, charactersViewModel: charactersViewModel)
+                
+                NavigationLink(destination: CharacterDetailsView(charactersViewModel: charactersViewModel, result: result), label: {
+                    HStack {
+                        ThumbnailView(result: result)
+                            .frame(width: 65, height: 65)
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack {
+                                Text(result.name)
+                                    .font(.title2)
+                                Image(systemName: charactersViewModel.contains(result) ? "star.fill" : "star")
+                                    .foregroundColor(.green)
+                                    .onTapGesture {
+                                        charactersViewModel.toggleFav(result: result)
+                                    }
+                            }
+                            Text(result.status)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                })//end of NavigationLinke
             }
             .navigationTitle(Text("Characters"))
             .searchable(text: $charactersViewModel.searchTerm, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search Characters")
